@@ -1,0 +1,55 @@
+name: nexflow
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: nexflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nexflow
+      POSTGRES_USER: nexflow
+      POSTGRES_PASSWORD: nexflow
+    ports:
+      # Host tools (DBeaver/pgAdmin/local Maven) use 5433.
+      # Containers talk to PostgreSQL internally on 5432.
+      - "5433:5432"
+    volumes:
+      - nexflow_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexflow -d nexflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  backend:
+    build:
+      context: ./backend
+    container_name: nexflow-backend
+    restart: unless-stopped
+    environment:
+      # The backend never depends on the Windows host port.
+      # It connects through Docker DNS using the postgres service name.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/nexflow
+      SPRING_DATASOURCE_USERNAME: nexflow
+      SPRING_DATASOURCE_PASSWORD: nexflow
+      JWT_SECRET: bXktc3VwZXItc2VjcmV0LWtleS1mb3ItbmV4Zmxvdy1wb3J0Zm9saW8tMjAyNi0xMjM0NTY=
+      FRONTEND_URL: http://localhost:4200
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: nexflow-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+
+volumes:
+  nexflow_pgdata:

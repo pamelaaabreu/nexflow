@@ -1,0 +1,6 @@
+package dev.nexflow.order; import jakarta.persistence.*; import java.math.BigDecimal; import java.util.UUID;
+@Entity @Table(name="order_items") public class OrderItem {
+ @Id @GeneratedValue(strategy=GenerationType.UUID) private UUID id; @ManyToOne(fetch=FetchType.LAZY,optional=false) @JoinColumn(name="order_id") private OrderEntity order;
+ @Column(nullable=false) private UUID productId; @Column(nullable=false) private String productName; @Column(nullable=false) private int quantity; @Column(nullable=false,precision=14,scale=2) private BigDecimal unitPrice; @Column(nullable=false,precision=14,scale=2) private BigDecimal total;
+ public UUID getId(){return id;} public OrderEntity getOrder(){return order;} public void setOrder(OrderEntity v){order=v;} public UUID getProductId(){return productId;} public void setProductId(UUID v){productId=v;} public String getProductName(){return productName;} public void setProductName(String v){productName=v;} public int getQuantity(){return quantity;} public void setQuantity(int v){quantity=v;} public BigDecimal getUnitPrice(){return unitPrice;} public void setUnitPrice(BigDecimal v){unitPrice=v;} public BigDecimal getTotal(){return total;} public void setTotal(BigDecimal v){total=v;}
+}

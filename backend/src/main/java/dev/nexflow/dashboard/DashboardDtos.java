@@ -1,0 +1,2 @@
+package dev.nexflow.dashboard; import dev.nexflow.order.OrderDtos; import java.math.BigDecimal; import java.util.*;
+public final class DashboardDtos {private DashboardDtos(){} public record TopProduct(String name,int quantity,BigDecimal revenue){} public record View(BigDecimal revenue,long orders,BigDecimal averageTicket,long criticalStock,Map<String,Long> statusCounts,List<OrderDtos.View> recentOrders,List<TopProduct> topProducts){} }

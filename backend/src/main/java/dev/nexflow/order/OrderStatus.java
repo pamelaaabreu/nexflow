@@ -1,0 +1,1 @@
+package dev.nexflow.order; public enum OrderStatus { CREATED, PAYMENT_APPROVED, SEPARATING, READY_TO_SHIP, SHIPPED, DELIVERED, CANCELLED }

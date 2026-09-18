@@ -1,0 +1,14 @@
+<div class="app-shell">
+ <aside class="sidebar">
+  <a class="brand" routerLink="/dashboard"><span class="brand-mark">N</span><span>NexFlow<small>Commerce Ops</small></span></a>
+  <nav>
+   <a routerLink="/dashboard" routerLinkActive="active"><span>◫</span> Dashboard</a>
+   <a routerLink="/orders" routerLinkActive="active"><span>◇</span> Pedidos</a>
+   <a routerLink="/products" routerLinkActive="active"><span>□</span> Produtos</a>
+   <a routerLink="/inventory" routerLinkActive="active"><span>⇄</span> Estoque</a>
+   <a routerLink="/audit" routerLinkActive="active"><span>⌁</span> Auditoria</a>
+  </nav>
+  <div class="sidebar-footer"><div class="mini-avatar">{{auth.user()?.name?.charAt(0)}}</div><div><strong>{{auth.user()?.name}}</strong><small>{{auth.user()?.role}}</small></div><button (click)="logout()" title="Sair">↗</button></div>
+ </aside>
+ <main><header class="topbar"><div><span class="eyebrow">OPERATIONS CENTER</span></div><div class="top-actions"><span class="live"><i></i> Sistema online</span><div class="avatar">{{auth.user()?.name?.charAt(0)}}</div></div></header><section class="page"><router-outlet /></section></main>
+</div>

@@ -1,0 +1,2 @@
+import { Component,OnInit } from '@angular/core'; import { DatePipe } from '@angular/common'; import { ApiService } from '../../core/api.service'; import { AuditEvent } from '../../core/models';
+@Component({standalone:true,imports:[DatePipe],templateUrl:'./audit.component.html',styleUrl:'../../shared/list-page.scss'}) export class AuditComponent implements OnInit {events:AuditEvent[]=[];constructor(private api:ApiService){}ngOnInit(){this.api.audit().subscribe(v=>this.events=v)}}

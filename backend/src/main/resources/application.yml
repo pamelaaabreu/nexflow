@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: nexflow-api
+  datasource:
+    # Local Maven development uses the Docker-published PostgreSQL port 5433.
+    # Docker Compose overrides these with postgres:5432 for the backend container.
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://127.0.0.1:5433/nexflow}
+    username: ${SPRING_DATASOURCE_USERNAME:nexflow}
+    password: ${SPRING_DATASOURCE_PASSWORD:nexflow}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+nexflow:
+  jwt:
+    secret: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1mb3ItbmV4Zmxvdy1wb3J0Zm9saW8tMjAyNi0xMjM0NTY=}
+    access-expiration-ms: 900000
+    refresh-expiration-ms: 604800000
+  cors:
+    allowed-origin: ${FRONTEND_URL:http://localhost:4200}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,flyway
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
