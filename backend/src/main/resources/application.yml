@@ -25,7 +25,7 @@ server:
 nexflow:
   jwt:
     secret: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1mb3ItbmV4Zmxvdy1wb3J0Zm9saW8tMjAyNi0xMjM0NTY=}
-    access-expiration-ms: 900000
+    access-expiration-ms: 600000
     refresh-expiration-ms: 604800000
   cors:
     allowed-origin: ${FRONTEND_URL:http://localhost:4200}

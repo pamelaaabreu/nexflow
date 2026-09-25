@@ -1,35 +1,83 @@
-import { Injectable, computed, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { tap } from "rxjs";
+import { Injectable, computed, signal } from "@angular/core";
+import { Router } from "@angular/router";
+import { Observable, tap, throwError } from "rxjs";
+
 import { AuthResponse, UserView } from "./models";
+
 @Injectable({ providedIn: "root" })
 export class AuthService {
   private readonly key = "nexflow.auth";
-  private state = signal<AuthResponse | null>(this.load());
-  user = computed(() => this.state()?.user ?? null);
-  token = computed(() => this.state()?.accessToken ?? null);
-  isAuthenticated = computed(() => !!this.state()?.accessToken);
-  constructor(private http: HttpClient) {}
-  login(email: string, password: string) {
+
+  private readonly state = signal<AuthResponse | null>(this.load());
+
+  readonly user = computed<UserView | null>(
+    () => this.state()?.user ?? null,
+  );
+
+  readonly token = computed<string | null>(
+    () => this.state()?.accessToken ?? null,
+  );
+
+  readonly refreshToken = computed<string | null>(
+    () => this.state()?.refreshToken ?? null,
+  );
+
+  readonly isAuthenticated = computed(
+    () => !!this.state()?.accessToken,
+  );
+
+  constructor(
+    private readonly http: HttpClient,
+    private readonly router: Router,
+  ) {}
+
+  login(email: string, password: string): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>("/api/auth/login", { email, password })
-      .pipe(tap((r) => this.save(r)));
+      .post<AuthResponse>("/api/auth/login", {
+        email,
+        password,
+      })
+      .pipe(
+        tap((response) => this.save(response)),
+      );
   }
-  refresh() {
-    const refreshToken = this.state()?.refreshToken;
+
+  refresh(): Observable<AuthResponse> {
+    const refreshToken = this.refreshToken();
+
+    if (!refreshToken) {
+      return throwError(
+        () => new Error("Refresh token não encontrado."),
+      );
+    }
+
     return this.http
-      .post<AuthResponse>("/api/auth/refresh", { refreshToken })
-      .pipe(tap((r) => this.save(r)));
+      .post<AuthResponse>("/api/auth/refresh", {
+        refreshToken,
+      })
+      .pipe(
+        tap((response) => this.save(response)),
+      );
   }
-  logout() {
+
+  logout(): void {
     localStorage.removeItem(this.key);
     this.state.set(null);
+
+    void this.router.navigate(["/login"]);
   }
-  private save(r: AuthResponse) {
-    localStorage.setItem(this.key, JSON.stringify(r));
-    this.state.set(r);
+
+  private save(response: AuthResponse): void {
+    localStorage.setItem(
+      this.key,
+      JSON.stringify(response),
+    );
+
+    this.state.set(response);
   }
-  private load() {
+
+  private load(): AuthResponse | null {
     try {
       return JSON.parse(
         localStorage.getItem(this.key) ?? "null",

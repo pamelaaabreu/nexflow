@@ -26,8 +26,13 @@ public class JwtService {
         this.refreshExpiration = refreshExpiration;
     }
 
-    public String accessToken(UserDetails user) { return generate(user, accessExpiration, "access"); }
-    public String refreshToken(UserDetails user) { return generate(user, refreshExpiration, "refresh"); }
+    public String accessToken(UserDetails user) {
+        return generate(user, accessExpiration, "access");
+    }
+
+    public String refreshToken(UserDetails user) {
+        return generate(user, refreshExpiration, "refresh");
+    }
 
     private String generate(UserDetails user, long expiration, String type) {
         Date now = new Date();
@@ -41,12 +46,27 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractUsername(String token) { return extract(token, Claims::getSubject); }
-    public String extractType(String token) { return extractAll(token).get("type", String.class); }
+    public String extractUsername(String token) {
+        return extract(token, Claims::getSubject);
+    }
+
+    public String extractType(String token) {
+        return extractAll(token).get("type", String.class);
+    }
+
     public boolean isValid(String token, UserDetails user) {
         return extractUsername(token).equalsIgnoreCase(user.getUsername()) && !isExpired(token);
     }
-    private boolean isExpired(String token) { return extract(token, Claims::getExpiration).before(new Date()); }
-    private <T> T extract(String token, Function<Claims,T> resolver) { return resolver.apply(extractAll(token)); }
-    private Claims extractAll(String token) { return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload(); }
+
+    private boolean isExpired(String token) {
+        return extract(token, Claims::getExpiration).before(new Date());
+    }
+
+    private <T> T extract(String token, Function<Claims, T> resolver) {
+        return resolver.apply(extractAll(token));
+    }
+
+    private Claims extractAll(String token) {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+    }
 }
