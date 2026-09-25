@@ -1,53 +1,104 @@
 # NexFlow — Commerce Operations Platform
 
-Full-stack commerce operations platform built with Angular, Spring Boot and PostgreSQL.
+NexFlow is a full-stack commerce operations platform designed to manage products, inventory, orders and fulfillment through a centralized web application.
 
-## Stack
+The project was built as a portfolio application focused on real-world business workflows, frontend architecture, REST API development, authentication, database migrations and containerized environments.
 
-- Angular 22
-- TypeScript 6
-- Java 21
-- Spring Boot 4.1.1
-- Spring Security + JWT
-- Spring Data JPA / Hibernate
-- Flyway
-- PostgreSQL 17
-- Docker + Docker Compose
-- Nginx
+## 🚀 Tech Stack
 
-The Angular compiler configuration is TypeScript 6 compatible and avoids removed/deprecated compiler options.
+### Frontend
 
-## Recommended local setup — Docker Compose
+* Angular 22
+* TypeScript 6
+* Angular Router
+* HTTP Interceptors
+* JWT Authentication
+* Responsive UI
 
-The supported local setup runs **PostgreSQL, backend and frontend in Docker**.
-The backend connects to PostgreSQL through Docker's internal network using `postgres:5432`, so it does not depend on a PostgreSQL installation or port 5432 on Windows.
+### Backend
 
-### First start
+* Java 21
+* Spring Boot 4.1.1
+* Spring Security
+* JWT Authentication
+* Spring Data JPA
+* Hibernate
+* Flyway
+* REST APIs
+* Spring Boot Actuator
 
-From the project root:
+### Database & Infrastructure
 
-```powershell
-docker compose up --build -d
+* PostgreSQL 17
+* Docker
+* Docker Compose
+* Nginx
+
+---
+
+## ✨ Features
+
+NexFlow currently includes:
+
+* Authentication with JWT
+* Role-based access control
+* Executive dashboard with KPIs
+* Product catalog management
+* Inventory availability tracking
+* Low-stock alerts
+* Stock adjustments
+* Stock movement history
+* Order creation
+* Automatic stock reservation
+* Fulfillment workflow
+* Order cancellation with stock release
+* Audit trail
+
+---
+
+## 🏗️ Architecture
+
+The project follows a separated frontend/backend architecture:
+
+```text
+nexflow/
+├── backend/
+│   └── Spring Boot REST API
+│
+├── frontend/
+│   └── Angular application
+│
+├── docs/
+│
+├── .github/
+│   └── workflows/
+│
+├── docker-compose.yml
+├── .gitignore
+└── README.md
 ```
 
-Check the containers:
+The Angular application communicates with the Spring Boot REST API through `/api`.
 
-```powershell
-docker compose ps
-```
+Spring Boot handles business rules, authentication, persistence and database access.
 
-Expected services:
+PostgreSQL is used as the relational database, while Flyway manages database migrations.
 
-- `nexflow-postgres` — healthy
-- `nexflow-backend` — running
-- `nexflow-frontend` — running
+---
 
-Open:
+## 🔐 Authentication
 
-- App: http://localhost:4200
-- API: http://localhost:8080
-- Swagger: http://localhost:8080/swagger-ui.html
-- Actuator: http://localhost:8080/actuator/health
+Authentication is based on JWT.
+
+The application supports:
+
+* Login
+* Access tokens
+* Refresh tokens
+* Protected frontend routes
+* Angular HTTP authentication interceptor
+* Spring Security protected endpoints
+* Role-based authorization
 
 ### Demo account
 
@@ -56,76 +107,44 @@ Email: demo@nexflow.dev
 Password: Demo@123
 ```
 
-### PostgreSQL access from Windows tools
+These credentials are intended exclusively for the local demo environment.
 
-PostgreSQL is intentionally exposed on **host port 5433** to avoid conflicts with local PostgreSQL installations that commonly use 5432.
+---
 
-```text
-Host: 127.0.0.1
-Port: 5433
-Database: nexflow
-User: nexflow
-Password: nexflow
-```
+## 📦 Business Modules
 
-## One-time migration from the old local setup
+### Dashboard
 
-If you previously started an older NexFlow compose configuration, remove only the old NexFlow containers/volume once so PostgreSQL is initialized from this configuration:
+Provides an overview of operational information and business KPIs.
 
-```powershell
-docker compose down -v --remove-orphans
-docker compose up --build -d
-```
+### Products
 
-`down -v` deletes the local NexFlow database volume. Use it only for this first reset or when you intentionally want a fresh database.
+Handles the product catalog and product information.
 
-After that, normal starts are simply:
+### Inventory
 
-```powershell
-docker compose up -d
-```
+Manages:
 
-and stops are:
+* Available stock
+* Stock adjustments
+* Low-stock alerts
+* Movement history
 
-```powershell
-docker compose down
-```
+### Orders
 
-## Optional: run the backend with Maven
+Handles the complete order lifecycle, including automatic stock reservation.
 
-Keep PostgreSQL running through Docker:
+### Fulfillment
 
-```powershell
-docker compose up postgres -d
-cd backend
-mvn spring-boot:run
-```
+Tracks orders through the operational fulfillment process.
 
-No environment variables are required. `application.yml` points local Maven development to `127.0.0.1:5433`.
+### Audit
 
-## Optional: run the Angular dev server
+Stores relevant business actions and system events for traceability.
 
-```powershell
-cd frontend
-npm install
-npm start
-```
+---
 
-The Angular development server proxies `/api` to `http://localhost:8080`.
-
-## Business modules
-
-- Authentication and role-based access
-- Executive dashboard with KPIs
-- Product catalog
-- Inventory availability and low-stock alerts
-- Stock adjustments and movement history
-- Order creation with automatic stock reservation
-- Fulfillment workflow
-- Cancellation with stock release
-- Audit trail
-
-## Order workflow
+## 🔄 Order Workflow
 
 ```text
 CREATED
@@ -141,16 +160,202 @@ SHIPPED
 DELIVERED
 ```
 
-## Author
+Order cancellation releases previously reserved inventory when applicable.
 
-**Pamela Abreu** — Full Stack / Frontend Developer
+---
 
-Angular • Java • Spring Boot • Go • PostgreSQL
+## 🐳 Running with Docker
 
-## Database migrations
+The recommended way to run NexFlow locally is using Docker Compose.
 
-The backend uses **Flyway managed by Spring Boot**. On startup, `V1__create_schema.sql` is executed before Hibernate validation.
+### Requirements
 
-Spring Boot 4 separates Flyway auto-configuration into its own module, so the project uses `spring-boot-starter-flyway` plus `flyway-database-postgresql`. Do not replace the starter with only `flyway-core`, otherwise migrations will not be auto-configured before JPA.
+Make sure you have installed:
 
-You can inspect applied migrations after startup at `http://localhost:8080/actuator/flyway`.
+* Docker
+* Docker Compose
+
+### Start the application
+
+From the project root:
+
+```bash
+docker compose up --build -d
+```
+
+Check the containers:
+
+```bash
+docker compose ps
+```
+
+Expected services:
+
+```text
+nexflow-postgres
+nexflow-backend
+nexflow-frontend
+```
+
+Then open:
+
+| Service         | URL                                   |
+| --------------- | ------------------------------------- |
+| Frontend        | http://localhost:4200                 |
+| Backend API     | http://localhost:8080                 |
+| Swagger         | http://localhost:8080/swagger-ui.html |
+| Actuator Health | http://localhost:8080/actuator/health |
+
+---
+
+## 🗄️ PostgreSQL
+
+PostgreSQL runs inside Docker.
+
+For connections from database tools installed on Windows:
+
+```text
+Host: 127.0.0.1
+Port: 5433
+Database: nexflow
+User: nexflow
+Password: nexflow
+```
+
+Port `5433` is intentionally exposed on the host to avoid conflicts with local PostgreSQL installations that normally use port `5432`.
+
+These credentials are intended for local development only.
+
+---
+
+## 🗃️ Database Migrations
+
+Database versioning is handled by Flyway.
+
+When the backend starts, migrations are executed before Hibernate validates the database schema.
+
+The initial migration is:
+
+```text
+V1__create_schema.sql
+```
+
+Applied migrations can be inspected through:
+
+```text
+http://localhost:8080/actuator/flyway
+```
+
+The project uses:
+
+```text
+spring-boot-starter-flyway
+flyway-database-postgresql
+```
+
+---
+
+## 💻 Running the Backend Separately
+
+You can run only PostgreSQL through Docker:
+
+```bash
+docker compose up postgres -d
+```
+
+Then start the backend:
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+For local Maven development, the backend connects to PostgreSQL through:
+
+```text
+127.0.0.1:5433
+```
+
+---
+
+## 🅰️ Running Angular Separately
+
+Open the frontend directory:
+
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm start
+```
+
+The Angular development server proxies `/api` requests to:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## 🔁 Resetting the Local Environment
+
+If you need to completely recreate the NexFlow database:
+
+```bash
+docker compose down -v --remove-orphans
+docker compose up --build -d
+```
+
+> `docker compose down -v` deletes the local NexFlow database volume. Use it only when you intentionally want a fresh database.
+
+For normal usage:
+
+### Start
+
+```bash
+docker compose up -d
+```
+
+### Stop
+
+```bash
+docker compose down
+```
+
+---
+
+## 🎯 Project Goals
+
+NexFlow was developed to practice and demonstrate concepts commonly found in production applications, including:
+
+* Full-stack application architecture
+* Modern Angular development
+* REST API design
+* Authentication and authorization
+* Business rule implementation
+* Relational database modeling
+* Database migrations
+* Inventory and order workflows
+* Containerized development environments
+* Separation of frontend and backend responsibilities
+
+---
+
+## 👩‍💻 Author
+
+**Pamela Abreu**
+
+Full Stack / Frontend Developer
+
+Angular • TypeScript • Java • Spring Boot • Go • PostgreSQL
+
+GitHub: [github.com/pamelaaabreu](https://github.com/pamelaaabreu)
