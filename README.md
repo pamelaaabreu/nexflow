@@ -1,4 +1,4 @@
-# NexFlow — Commerce Operations Platform
+# NexFlow: Commerce Operations Platform
 
 NexFlow is a full-stack commerce operations platform designed to manage products, inventory, orders and fulfillment through a centralized web application.
 
